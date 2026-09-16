@@ -1,12 +1,14 @@
 {
   "name": "courier_platform_server_side",
   "version": "1.0.0",
-  "description": "",
+  "description": "Server-side implementation for the Courier Platform",
   "license": "ISC",
   "author": "",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -19,8 +21,13 @@
     "http-status": "^2.1.0",
     "jsonwebtoken": "^9.0.3",
     "redis": "^6.2.1",
-   
     "typescript": "^7.0.2",
     "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "tsx": "^4.23.13"
   }
 }
