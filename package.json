@@ -4,7 +4,7 @@
   "description": "Server-side implementation for the Courier Platform",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
@@ -12,6 +12,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -20,6 +22,7 @@
     "express": "^5.2.1",
     "http-status": "^2.1.0",
     "jsonwebtoken": "^9.0.3",
+    "pg": "^8.23.0",
     "redis": "^6.2.1",
     "typescript": "^7.0.2",
     "zod": "^4.6.5"
@@ -28,6 +31,9 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/node": "^22.20.3",
+    "@types/pg": "^8.23.1",
+    "prisma": "^7.10.0",
     "tsx": "^4.23.13"
   }
 }
