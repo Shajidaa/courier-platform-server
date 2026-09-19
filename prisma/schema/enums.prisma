@@ -1,0 +1,28 @@
+enum Role {
+    SENDER
+    RIDER
+    HUB_MANAGER
+    OPS_MANAGER
+    SUPPORT_AGENT
+    ADMIN
+    SUPER_ADMIN
+}
+
+enum UserStatus {
+    ACTIVE
+    INACTIVE
+    SUSPENDED
+    BLOCKED
+    DELETED
+}
+
+enum Gender {
+    MALE
+    FEMALE
+    OTHER
+}
+
+enum AuthProvider {
+    GOOGLE
+    CREDENTIAL
+}
