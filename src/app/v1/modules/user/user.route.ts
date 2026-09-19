@@ -4,7 +4,7 @@ import { UserController } from "./user.controller";
 const router = Router();
 
 router.post("/register", UserController.registerUser);
-router.post("/verify-email", () => {});
+router.post("/verify-email", UserController.verifyEmail);
 router.get("/me", () => {});
 router.post("/google", () => {});
 router.post(
