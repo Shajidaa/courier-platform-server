@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
+import v1Routes from "./app/v1/routes";
 
 const app: Application = express();
 
@@ -18,7 +19,6 @@ app.use(
   }),
 );
 
-// Health Check
 app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
@@ -26,7 +26,8 @@ app.get("/", (_req: Request, res: Response) => {
   });
 });
 
-// Routes
+// application routes
+app.use("/api/v1", v1Routes);
 
 // 404 Handler
 app.use((req: Request, res: Response) => {

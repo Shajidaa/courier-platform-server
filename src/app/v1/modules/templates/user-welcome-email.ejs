@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome · Courier Platform</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: #eef2f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        line-height: 1.5;
+        color: #1e2b3c;
+      }
+
+      .email-card {
+        max-width: 580px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow:
+          0 15px 35px -8px rgba(0, 20, 30, 0.15),
+          0 4px 12px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        transition: all 0.2s ease;
+      }
+
+      /* courier brand accent — deep navy to bright blue */
+      .accent-bar {
+        height: 8px;
+        background: linear-gradient(
+          90deg,
+          #0b2b4a 0%,
+          #1e5b9c 45%,
+          #2f8be0 100%
+        );
+        width: 100%;
+      }
+
+      .content {
+        padding: 40px 40px 32px;
+      }
+
+      @media (max-width: 480px) {
+        .content {
+          padding: 28px 22px 24px;
+        }
+      }
+
+      .brand-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+
+      .brand-icon {
+        background: #0b2b4a;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        font-weight: 600;
+        box-shadow: 0 6px 12px -4px rgba(11, 43, 74, 0.25);
+      }
+
+      .brand-text {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: #0b2b4a;
+        line-height: 1.2;
+      }
+
+      .brand-text span {
+        display: block;
+        font-size: 13px;
+        font-weight: 400;
+        color: #5e7a94;
+        letter-spacing: 0.02em;
+      }
+
+      h1 {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #0b2b4a;
+        margin-bottom: 8px;
+        line-height: 1.2;
+      }
+
+      .greeting {
+        font-size: 16px;
+        color: #2d4d6e;
+        margin-bottom: 12px;
+        font-weight: 500;
+      }
+
+      .message {
+        font-size: 15px;
+        color: #406078;
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+
+      .message strong {
+        color: #0b2b4a;
+        font-weight: 600;
+      }
+
+      .feature-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin: 28px 0 20px;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        background: #f0f7fe;
+        padding: 16px 20px;
+        border-radius: 16px;
+        border: 1px solid #cfe2f5;
+        transition: all 0.15s ease;
+      }
+
+      .feature-icon {
+        font-size: 22px;
+        line-height: 1.2;
+        flex-shrink: 0;
+        width: 32px;
+        text-align: center;
+      }
+
+      .feature-text {
+        font-size: 15px;
+        color: #1a3d5c;
+        font-weight: 500;
+      }
+
+      .feature-text small {
+        display: block;
+        font-size: 13px;
+        font-weight: 400;
+        color: #547a9c;
+        margin-top: 2px;
+      }
+
+      .cta-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #1a4b73;
+        background: #e6f2fd;
+        padding: 14px 20px;
+        border-radius: 40px;
+        margin: 26px 0 18px;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid #c2ddf5;
+        font-weight: 500;
+      }
+
+      .cta-note span {
+        font-size: 16px;
+      }
+
+      .disclaimer {
+        font-size: 14px;
+        color: #5d7e9c;
+        border-top: 1px solid #dae9f5;
+        padding-top: 24px;
+        margin-top: 10px;
+        text-align: center;
+        line-height: 1.6;
+      }
+
+      .disclaimer a {
+        color: #1d5b99;
+        text-decoration: none;
+        font-weight: 500;
+        border-bottom: 1px dotted transparent;
+      }
+
+      .disclaimer a:hover {
+        border-bottom-color: #1d5b99;
+      }
+
+      .footer {
+        background: #f7fbfe;
+        padding: 22px 40px 20px;
+        border-top: 1px solid #dae9f5;
+        text-align: center;
+        font-size: 12px;
+        color: #5d7e9c;
+        letter-spacing: 0.02em;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 28px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: #1d5b99;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 12px;
+        border-bottom: 1px dotted transparent;
+        transition: border-color 0.2s;
+      }
+
+      .footer-links a:hover {
+        border-bottom-color: #1d5b99;
+      }
+
+      .copyright {
+        color: #7f99b2;
+      }
+
+      .separator {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #b6d2ea, transparent);
+        margin: 6px 0 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-card">
+      <div class="accent-bar"></div>
+
+      <div class="content">
+        <!-- Brand header -->
+        <div class="brand-header">
+          <div class="brand-icon">📦</div>
+          <div class="brand-text">Courier<span>Platform</span></div>
+        </div>
+
+        <!-- Main heading -->
+        <h1>Welcome to Courier Platform</h1>
+
+        <!-- Greeting with recipient name -->
+        <div class="greeting">Hello <strong><%= name %></strong>,</div>
+
+        <!-- Welcome message -->
+        <div class="message">
+          Thank you for joining <strong>Courier Platform</strong>. Your account
+          has been created successfully. We're excited to help you send, track,
+          and manage your deliveries with ease.
+        </div>
+
+        <!-- Feature highlights -->
+        <div class="feature-grid">
+          <div class="feature-item">
+            <div class="feature-icon">📦</div>
+            <div class="feature-text">
+              Create and send shipments
+              <small>Book pickups and deliveries in seconds</small>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📍</div>
+            <div class="feature-text">
+              Real-time tracking
+              <small>Follow every package from pickup to doorstep</small>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <div class="feature-text">
+              Manage all your deliveries
+              <small
+                >View history, invoices, and delivery status in one place</small
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Friendly call-to-action note -->
+        <div class="cta-note">
+          <span>🚚</span>
+          <span>Your deliveries, simplified — get started today</span>
+        </div>
+
+        <!-- Soft disclaimer / help -->
+        <div class="disclaimer">
+          Need help? Visit our <a href="#">Help Center</a> or contact support
+          anytime. We're always here to help you deliver.
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <div class="footer-links">
+          <a href="#">Help Center</a>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+        <div class="separator"></div>
+        <div class="copyright">
+          &copy; Courier Platform System. All rights reserved.<br />
+          123 Delivery Lane, Suite 400 · San Francisco, CA
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
