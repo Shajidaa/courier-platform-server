@@ -1,0 +1,53 @@
+model Shipment {
+    id String @id @default(uuid())
+
+    trackingNumber     String           @unique @map("tracking_number")
+    senderId           String?          @map("sender_id")
+    sender             Sender?          @relation(fields: [senderId], references: [id], onDelete: SetNull)
+    recipientName      String           @map("recipient_name")
+    recipientPhone     String           @map("recipient_phone")
+    recipientAddress   String           @map("recipient_address")
+    maxWeight          Decimal          @map("max_weight") @db.Decimal(8, 2)
+    minWeight          Decimal          @map("min_weight") @db.Decimal(8, 2)
+    category           ShipmentCategory @default(PARCEL)
+    codAmount          Decimal          @default(0.00) @map("cod_amount") @db.Decimal(12, 2)
+    deliveryCharge     Decimal          @default(0.00) @map("delivery_charge") @db.Decimal(12, 2)
+    status             ShipmentStatus   @default(PENDING)
+    assignedCourierId  String?          @map("assigned_courier_id")
+    assignedCourier    Rider?           @relation(fields: [assignedCourierId], references: [id], onDelete: SetNull)
+    deliveryType       DeliveryType     @default(STANDARD) @map("delivery_type")
+    packageDimensions  String?          @map("package_dimensions")
+    estimatedDeliveryDate DateTime?     @map("estimated_delivery_date")
+    actualDeliveryDate    DateTime?     @map("actual_delivery_date")
+    cancellationReason    String?       @map("cancellation_reason")
+    proofOfDelivery       String?       @map("proof_of_delivery")
+    currentHubId       String?          @map("current_hub_id")
+    currentHub         Hub?             @relation("CurrentHubShipments", fields: [currentHubId], references: [id], onDelete: SetNull)
+
+    payments        Payment[]
+    shipmentLogs    ShipmentLog[]
+    supportTickets  SupportTicket[]
+    courierEarnings CourierEarning[]
+    notifications   Notification[]
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("shipments")
+}
+
+model ShipmentLog {
+    id String @id @default(uuid())
+
+    shipmentId  String         @map("shipment_id")
+    shipment    Shipment       @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+    status      ShipmentStatus
+    note        String?
+    updatedById String?        @map("updated_by")
+    updatedBy   User?          @relation("LogUpdater", fields: [updatedById], references: [id], onDelete: SetNull)
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("shipment_logs")
+}

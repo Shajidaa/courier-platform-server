@@ -1,0 +1,18 @@
+model Sender {
+    id String @id @default(uuid())
+
+    userId String @unique @map("user_id")
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    defaultPickupAddress String?  @map("default_pickup_address")
+    city                 String?
+    postalCode           String?  @map("postal_code")
+    totalOrders          Int      @default(0) @map("total_orders")
+    walletBalance        Decimal  @default(0.00) @map("wallet_balance") @db.Decimal(12, 2)
+    shipments            Shipment[]
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("senders")
+}

@@ -1,0 +1,16 @@
+model DeliveryFee {
+    id String @id @default(uuid())
+
+    fromZoneId      String   @map("from_zone_id")
+    toZoneId        String   @map("to_zone_id")
+    minWeight       Decimal  @map("min_weight") @db.Decimal(8, 2)
+    maxWeight       Decimal  @map("max_weight") @db.Decimal(8, 2)
+    baseFare        Decimal  @map("base_fare") @db.Decimal(12, 2)
+    extraWeightFare Decimal  @map("extra_weight_fare") @db.Decimal(12, 2)
+    fuelSurcharge   Decimal  @default(0.00) @map("fuel_surcharge") @db.Decimal(12, 2)
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("delivery_fees")
+}

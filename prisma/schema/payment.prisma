@@ -1,0 +1,19 @@
+model Payment {
+    id String @id @default(uuid())
+
+    shipmentId      String        @map("shipment_id")
+    shipment        Shipment      @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+    amount          Decimal       @db.Decimal(12, 2)
+    paymentMethod   PaymentMethod @map("payment_method")
+    paymentStatus   PaymentStatus @default(PENDING) @map("payment_status")
+    transactionId   String?       @unique @map("transaction_id")
+    currency        Currency      @default(BDT)
+    gatewayResponse Json?         @map("gateway_response")
+    refundAmount    Decimal?      @map("refund_amount") @db.Decimal(12, 2)
+    refundStatus    RefundStatus? @default(NONE) @map("refund_status")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("payments")
+}

@@ -1,0 +1,21 @@
+model Rider {
+    id String @id @default(uuid())
+
+    userId String @unique @map("user_id")
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    vehicleNumber        String?          @map("vehicle_number")
+    vehicleType          VehicleType?     @map("vehicle_type")
+    walletBalance        Decimal          @default(0.00) @map("wallet_balance") @db.Decimal(12, 2)
+    drivingLicenseNumber String?          @map("driving_license_number")
+    averageRating        Decimal?         @map("average_rating") @db.Decimal(3, 2)
+    totalDeliveries      Int              @default(0) @map("total_deliveries")
+
+    shipments            Shipment[]
+    earnings             CourierEarning[]
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("riders")
+}

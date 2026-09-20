@@ -26,3 +26,114 @@ enum AuthProvider {
     GOOGLE
     CREDENTIAL
 }
+
+enum VehicleType {
+    BIKE
+    BICYCLE
+    SCOOTER
+    VAN
+    TRUCK
+    OTHER
+}
+
+enum VehicleStatus {
+    AVAILABLE
+    IN_TRANSIT
+    MAINTENANCE
+    OUT_OF_SERVICE
+}
+
+enum ShipmentCategory {
+    DOCUMENT
+    PARCEL
+    FRAGILE
+    ELECTRONICS
+    FOOD
+    OTHER
+}
+
+enum ShipmentStatus {
+    PENDING
+    ACCEPTED
+    PICKED_UP
+    IN_HUB
+    IN_TRANSIT
+    OUT_FOR_DELIVERY
+    DELIVERED
+    CANCELLED
+    RETURNED
+    FAILED
+}
+
+enum DeliveryType {
+    STANDARD
+    EXPRESS
+    SAME_DAY
+    NEXT_DAY
+}
+
+enum PaymentMethod {
+    CASH_ON_DELIVERY
+    BKASH
+    NAGAD
+    CARD
+    STRIPE
+    SSLCOMMERZ
+}
+
+enum PaymentStatus {
+    PENDING
+    PAID
+    FAILED
+    REFUNDED
+}
+
+enum Currency {
+    BDT
+    USD
+}
+
+enum RefundStatus {
+    NONE
+    REQUESTED
+    PROCESSING
+    REFUNDED
+    REJECTED
+}
+
+enum TicketStatus {
+    OPEN
+    IN_PROGRESS
+    RESOLVED
+    CLOSED
+}
+
+enum TicketPriority {
+    LOW
+    MEDIUM
+    HIGH
+    URGENT
+}
+
+enum EarningStatus {
+    PENDING
+    AVAILABLE
+    WITHDRAWN
+    CANCELLED
+}
+
+enum NotificationType {
+    SHIPMENT_UPDATE
+    PAYMENT
+    SYSTEM
+    SUPPORT
+    PROMOTION
+}
+
+enum TransferStatus {
+    PENDING
+    DISPATCHED
+    IN_TRANSIT
+    RECEIVED
+    CANCELLED
+}

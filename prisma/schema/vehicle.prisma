@@ -1,0 +1,18 @@
+model Vehicle {
+    id String @id @default(uuid())
+
+    vehicleNumber   String        @unique @map("vehicle_number")
+    type            VehicleType
+    driverName      String?       @map("driver_name")
+    capacity        String?
+    status          VehicleStatus @default(AVAILABLE)
+    currentDriverId String?       @map("current_driver_id")
+    currentDriver   User?         @relation("DriverVehicle", fields: [currentDriverId], references: [id], onDelete: SetNull)
+
+    transfers HubTransfer[]
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("vehicles")
+}

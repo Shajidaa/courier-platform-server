@@ -2,14 +2,14 @@ model Profile {
     id String @id @default(uuid())
 
     bio         String?
-    phoneNumber String?
+    phoneNumber String? @map("phone_number")
     nid         String? @unique
     passport    String? @unique
 
-    userId    String   @unique
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    userId    String   @unique @map("user_id")
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
     @@map("profiles")
 }

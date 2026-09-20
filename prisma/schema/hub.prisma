@@ -1,0 +1,56 @@
+model Hub {
+    id String @id @default(uuid())
+
+    hubName   String   @map("hub_name")
+    address   String
+    managerId String?  @unique @map("manager_id")
+    manager   User?    @relation("HubManager", fields: [managerId], references: [id], onDelete: SetNull)
+
+    users                User[]        @relation("HubEmployees")
+    areas                Area[]
+    currentShipments     Shipment[]    @relation("CurrentHubShipments")
+    sourceTransfers      HubTransfer[] @relation("SourceHubTransfers")
+    destinationTransfers HubTransfer[] @relation("DestinationHubTransfers")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("hubs")
+}
+
+model Area {
+    id String @id @default(uuid())
+
+    name       String
+    hubId      String @map("hub_id")
+    hub        Hub    @relation(fields: [hubId], references: [id], onDelete: Cascade)
+    postalCode String @map("postal_code")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("areas")
+}
+
+model HubTransfer {
+    id String @id @default(uuid())
+
+    sourceHubId      String  @map("source_hub_id")
+    sourceHub        Hub     @relation("SourceHubTransfers", fields: [sourceHubId], references: [id])
+    destinationHubId String  @map("destination_hub_id")
+    destinationHub   Hub     @relation("DestinationHubTransfers", fields: [destinationHubId], references: [id])
+    vehicleId        String? @map("vehicle_id")
+    vehicle          Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+    status       TransferStatus @default(PENDING)
+    dispatchedAt DateTime?      @map("dispatched_at")
+    receivedAt   DateTime?      @map("received_at")
+    receivedById String?        @map("received_by")
+    receivedBy   User?          @relation("TransferReceiver", fields: [receivedById], references: [id], onDelete: SetNull)
+    remarks      String?
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("hub_transfers")
+}

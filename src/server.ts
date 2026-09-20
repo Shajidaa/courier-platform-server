@@ -1,4 +1,3 @@
-import { console } from "inspector/promises";
 import app from "./app";
 import config from "./app/config";
 import { transporter } from "./app/libs/nodemailer";

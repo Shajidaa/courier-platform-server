@@ -1,0 +1,18 @@
+model CourierEarning {
+    id String @id @default(uuid())
+
+    courierId       String?       @map("courier_id")
+    courier         Rider?        @relation(fields: [courierId], references: [id], onDelete: SetNull)
+    userId          String?       @map("user_id")
+    user            User?         @relation("CourierUserEarnings", fields: [userId], references: [id], onDelete: SetNull)
+    shipmentId      String        @map("shipment_id")
+    shipment        Shipment      @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+    earningAmount   Decimal       @map("earning_amount") @db.Decimal(12, 2)
+    status          EarningStatus @default(PENDING)
+    deductionAmount Decimal?      @default(0.00) @map("deduction_amount") @db.Decimal(12, 2)
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("courier_earnings")
+}
