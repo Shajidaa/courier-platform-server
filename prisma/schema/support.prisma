@@ -1,0 +1,21 @@
+model SupportTicket {
+    id String @id @default(uuid())
+
+    shipmentId     String?        @map("shipment_id")
+    shipment       Shipment?      @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+    userId         String         @map("user_id")
+    user           User           @relation("TicketCreator", fields: [userId], references: [id], onDelete: Cascade)
+    title          String
+    description    String
+    status         TicketStatus   @default(OPEN)
+    priority       TicketPriority @default(MEDIUM)
+    assignedToId   String?        @map("assigned_to")
+    assignedTo     User?          @relation("TicketAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+    resolvedAt     DateTime?      @map("resolved_at")
+    resolutionNote String?        @map("resolution_note")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("support_tickets")
+}

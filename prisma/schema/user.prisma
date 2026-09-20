@@ -3,24 +3,45 @@ model User {
     name  String
     email String @unique
 
-    password      String?
-    googleId      String?      @unique
-    authProvider  AuthProvider @default(CREDENTIAL)
-    emailVerified Boolean      @default(false)
-    role          Role         @default(RIDER)
-    gender        Gender
+    password           String?
+    googleId           String?      @unique @map("google_id")
+    authProvider       AuthProvider @default(CREDENTIAL) @map("auth_provider")
+    emailVerified      Boolean      @default(false) @map("email_verified")
+    role               Role         @default(RIDER)
+    gender             Gender
+    status             UserStatus   @default(ACTIVE)
+    isActive           Boolean      @default(true) @map("is_active")
+    needPasswordChange Boolean      @default(false) @map("need_password_change")
 
-    status             UserStatus @default(ACTIVE)
-    needPasswordChange Boolean    @default(false)
-    imageUrl           String     @default("")
-    imagePublicId      String     @default("")
-    profileId          String?
-    profile            Profile?
+    imageUrl      String  @default("") @map("image_url")
+    imagePublicId String  @default("") @map("image_public_id")
+    photo         String?
+    nid           String?
+    phone         String?
+    passport      String?
+    bio           String?
 
-    isDeleted Boolean   @default(false)
-    deletedAt DateTime?
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
+    hubId      String? @map("hub_id")
+    hub        Hub?    @relation("HubEmployees", fields: [hubId], references: [id], onDelete: SetNull)
+    managedHub Hub?    @relation("HubManager")
+
+    profileId String?  @map("profile_id")
+    profile   Profile?
+    sender    Sender?
+    rider     Rider?
+
+    notifications       Notification[]
+    createdTickets      SupportTicket[]  @relation("TicketCreator")
+    assignedTickets     SupportTicket[]  @relation("TicketAssignee")
+    courierEarnings     CourierEarning[] @relation("CourierUserEarnings")
+    updatedShipmentLogs ShipmentLog[]    @relation("LogUpdater")
+    drivenVehicles      Vehicle[]        @relation("DriverVehicle")
+    receivedTransfers   HubTransfer[]    @relation("TransferReceiver")
+
+    isDeleted Boolean   @default(false) @map("is_deleted")
+    deletedAt DateTime? @map("deleted_at")
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
 
     @@map("users")
 }
