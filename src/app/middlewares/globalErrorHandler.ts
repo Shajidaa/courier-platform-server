@@ -1,4 +1,9 @@
-import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import type {
+  ErrorRequestHandler,
+  NextFunction,
+  Request,
+  Response,
+} from "express";
 import httpStatus from "http-status";
 import { ZodError } from "zod";
 import config from "../config";
@@ -86,18 +91,10 @@ export const globalErrorHandler: ErrorRequestHandler = (
     ];
   } else if (err instanceof Error) {
     message = err.message;
-    errorSources = [
-      {
-        path: "",
-        message: err.message,
-      },
-    ];
   }
 
   res.status(statusCode).json({
     success: false,
     message,
-    errorSources,
-    stack: config.node_env === "development" ? err?.stack : undefined,
   });
 };

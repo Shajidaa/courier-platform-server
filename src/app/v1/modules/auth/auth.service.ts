@@ -1,6 +1,9 @@
 import bcrypt from "bcryptjs";
 import httpStatus from "http-status";
-import { AuthProvider, UserStatus } from "../../../../../generated/prisma/client";
+import {
+  AuthProvider,
+  UserStatus,
+} from "../../../../../generated/prisma/client";
 import config from "../../../config";
 import AppError from "../../../errors/AppError";
 import { prisma } from "../../../libs/prisma";
@@ -26,7 +29,10 @@ const loginUser = async (
   });
 
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User does not exist with this email");
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "User does not exist with this email",
+    );
   }
 
   if (user.isDeleted || user.status === UserStatus.DELETED) {
@@ -68,10 +74,7 @@ const loginUser = async (
     );
   }
 
-  const isPasswordMatched = await bcrypt.compare(
-    password,
-    user.password || "",
-  );
+  const isPasswordMatched = await bcrypt.compare(password, user.password || "");
 
   if (!isPasswordMatched) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid email or password");
@@ -99,16 +102,13 @@ const loginUser = async (
   const { password: _, ...sanitizedUser } = user;
 
   return {
-    user: sanitizedUser,
     accessToken,
     refreshToken,
     needPasswordChange: user.needPasswordChange,
   };
 };
 
-const refreshToken = async (
-  token: string,
-): Promise<IRefreshTokenResponse> => {
+const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   if (!token) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Refresh token is missing");
   }
@@ -130,7 +130,10 @@ const refreshToken = async (
     throw new AppError(httpStatus.FORBIDDEN, "Account has been deleted");
   }
 
-  if (user.status === UserStatus.BLOCKED || user.status === UserStatus.SUSPENDED) {
+  if (
+    user.status === UserStatus.BLOCKED ||
+    user.status === UserStatus.SUSPENDED
+  ) {
     throw new AppError(
       httpStatus.FORBIDDEN,
       "Your account is not active. Please contact support.",
@@ -154,8 +157,28 @@ const refreshToken = async (
     accessToken,
   };
 };
+const logoutUser = async (token: string): Promise<void> => {
+  if (!token) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Token is missing");
+  }
 
+  const decoded = jwtUtils.verifyToken<IJwtPayload>(
+    token,
+    config.jwt_refresh_secret,
+  );
+
+  const user = await prisma.user.findUnique({
+    where: { id: decoded.userId },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return;
+};
 export const AuthService = {
   loginUser,
   refreshToken,
+  logoutUser,
 };

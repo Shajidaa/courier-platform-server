@@ -7,7 +7,7 @@ import { AuthService } from "./auth.service";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.loginUser(req.body);
-  const { accessToken, refreshToken, needPasswordChange, user } = result;
+  const { accessToken, refreshToken, needPasswordChange } = result;
 
   const isProduction = config.node_env === "production";
 
@@ -33,7 +33,6 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
       accessToken,
       refreshToken,
       needPasswordChange,
-      user,
     },
   });
 });
@@ -58,8 +57,21 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const logoutUser = catchAsync(async (req: Request, res: Response) => {
+  const token = req.cookies.refreshToken || req.body.refreshToken;
+  await AuthService.logoutUser(token);
 
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User logged out successfully.",
+  });
+});
 export const AuthController = {
   loginUser,
   refreshToken,
+  logoutUser,
 };

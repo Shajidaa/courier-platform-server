@@ -4,6 +4,7 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import AppError from "./app/errors/AppError";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import v1Routes from "./app/v1/routes";
+import notFoundHandler from "./app/middlewares/notFoundHandler";
 
 const app: Application = express();
 
@@ -34,6 +35,8 @@ app.use("/api/v1", v1Routes);
 app.use((req: Request, _res: Response, next: NextFunction) => {
   next(new AppError(404, `Route not found: ${req.originalUrl}`));
 });
+
+app.use(notFoundHandler);
 
 // Global Error Handler
 app.use(globalErrorHandler);

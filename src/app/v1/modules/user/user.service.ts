@@ -3,7 +3,12 @@ import crypto from "crypto";
 import ejs from "ejs";
 import httpStatus from "http-status";
 import path from "path";
-import { AuthProvider, Gender, Role, UserStatus } from "../../../../../generated/prisma/client";
+import {
+  AuthProvider,
+  Gender,
+  Role,
+  UserStatus,
+} from "../../../../../generated/prisma/client";
 import config from "../../../config";
 import AppError from "../../../errors/AppError";
 import { transporter } from "../../../libs/nodemailer";
@@ -218,7 +223,6 @@ const verifyEmail = async (
   );
 
   return {
-    user: createdUser,
     accessToken,
     refreshToken,
   };
@@ -329,13 +333,14 @@ const googleAuth = async (
   );
 
   return {
-    user: sanitizedUser,
     accessToken,
     refreshToken,
   };
 };
 
-const forgotPassword = async (payload: IForgotPasswordPayload): Promise<void> => {
+const forgotPassword = async (
+  payload: IForgotPasswordPayload,
+): Promise<void> => {
   const email = payload.email.trim().toLowerCase();
 
   const user = await prisma.user.findUnique({
@@ -454,7 +459,10 @@ const changePassword = async (
 
   const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
   if (!isPasswordMatch) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Current password is incorrect.");
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Current password is incorrect.",
+    );
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 12);
@@ -472,15 +480,7 @@ const updateProfile = async (
   userId: string,
   payload: IUpdateProfilePayload,
 ): Promise<TUserWithProfile> => {
-  const {
-    name,
-    gender,
-    imageUrl,
-    bio,
-    phoneNumber,
-    nid,
-    passport,
-  } = payload;
+  const { name, gender, imageUrl, bio, phoneNumber, nid, passport } = payload;
 
   const user = await prisma.user.findUnique({
     where: { id: userId },

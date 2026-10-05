@@ -1,4 +1,9 @@
-import { Gender, Profile, Role, User } from "../../../../../generated/prisma/client";
+import {
+  Gender,
+  Profile,
+  Role,
+  User,
+} from "../../../../../generated/prisma/client";
 
 export interface IRegisterUserPayload {
   name: string;
@@ -28,7 +33,6 @@ export type TUserWithProfile = TSanitizedUser & {
 };
 
 export interface IVerifyEmailResponse {
-  user: TSanitizedUser;
   accessToken: string;
   refreshToken: string;
 }
