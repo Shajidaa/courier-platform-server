@@ -8,7 +8,6 @@ export interface ILoginUserPayload {
 export type TSanitizedUser = Omit<User, "password">;
 
 export interface ILoginUserResponse {
-  user: TSanitizedUser;
   accessToken: string;
   refreshToken: string;
   needPasswordChange: boolean;
