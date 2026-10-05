@@ -18,7 +18,7 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
 
 const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.verifyEmail(req.body);
-  const { accessToken, refreshToken, user } = result;
+  const { accessToken, refreshToken } = result;
 
   const isProduction = config.node_env === "production";
 
@@ -43,7 +43,6 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
     data: {
       accessToken,
       refreshToken,
-      user,
     },
   });
 });
@@ -62,7 +61,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 
 const googleAuth = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.googleAuth(req.body);
-  const { accessToken, refreshToken, user } = result;
+  const { accessToken, refreshToken } = result;
 
   const isProduction = config.node_env === "production";
 
@@ -87,7 +86,6 @@ const googleAuth = catchAsync(async (req: Request, res: Response) => {
     data: {
       accessToken,
       refreshToken,
-      user,
     },
   });
 });
