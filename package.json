@@ -8,7 +8,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+     "build": "tsup",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -25,6 +27,7 @@
     "nodemailer": "^10.0.10",
     "pg": "^8.23.0",
     "redis": "^6.2.1",
+    "tsup": "^8.5.1",
     "typescript": "^7.0.2",
     "zod": "^4.6.5"
   },
