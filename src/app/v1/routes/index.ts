@@ -2,6 +2,7 @@ import { Router } from "express";
 import { AuthRoutes } from "../modules/auth/auth.route";
 import { HubRoutes } from "../modules/hub/hub.route";
 import { AreaRoutes } from "../modules/areas/area.route";
+import { HubTransferRoutes } from "../modules/hub-transfer/hub-transfer.route";
 import { ShipmentRoutes } from "../modules/shipment/shipment.route";
 import { UserRoutes } from "../modules/user/user.route";
 
@@ -18,6 +19,7 @@ const routes: IRoutes[] = [
   { path: "/hubs", router: HubRoutes },
   { path: "/areas", router: AreaRoutes },
   { path: "/shipments", router: ShipmentRoutes },
+  { path: "/hub-transfers", router: HubTransferRoutes },
 ];
 
 routes.forEach((route) => {

@@ -17,7 +17,14 @@ const registerUserSchema = z.object({
       .min(6, "Password must be at least 6 characters long"),
     gender: z.enum(["MALE", "FEMALE", "OTHER"] as const),
     role: z
-      .enum(["SENDER", "RIDER"] as const)
+      .enum(["SENDER", "RIDER",
+        "HUB_MANAGER",
+        "OPS_MANAGER",
+        "SUPPORT_AGENT",
+        "ADMIN",
+        "SUPER_ADMIN",
+
+      ] as const)
       .optional()
       .default("RIDER"),
   }),
