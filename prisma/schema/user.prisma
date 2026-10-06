@@ -4,7 +4,7 @@ model User {
     email String @unique
 
     password           String?
-    googleId           String?      @unique @map("google_id")
+    googleId           String?      @unique
     authProvider       AuthProvider @default(CREDENTIAL) @map("auth_provider")
     emailVerified      Boolean      @default(false) @map("email_verified")
     role               Role         @default(RIDER)
@@ -16,19 +16,14 @@ model User {
     imageUrl      String  @default("") @map("image_url")
     imagePublicId String  @default("") @map("image_public_id")
     photo         String?
-    nid           String?
-    phone         String?
-    passport      String?
-    bio           String?
 
     hubId      String? @map("hub_id")
     hub        Hub?    @relation("HubEmployees", fields: [hubId], references: [id], onDelete: SetNull)
     managedHub Hub?    @relation("HubManager")
 
-    profileId String?  @map("profile_id")
-    profile   Profile?
-    sender    Sender?
-    rider     Rider?
+    profile Profile?
+    sender  Sender?
+    rider   Rider?
 
     notifications       Notification[]
     createdTickets      SupportTicket[]  @relation("TicketCreator")

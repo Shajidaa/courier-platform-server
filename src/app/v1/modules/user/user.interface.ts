@@ -5,12 +5,15 @@ import {
   User,
 } from "../../../../../generated/prisma/client";
 
+// Only RIDER and SENDER can self-register; other roles are assigned by admins
+export type TPublicRole = Extract<Role, "RIDER" | "SENDER">;
+
 export interface IRegisterUserPayload {
   name: string;
   email: string;
   password: string;
   gender: Gender;
-  role?: Role;
+  role?: TPublicRole;
 }
 
 export interface IVerifyEmailPayload {

@@ -61,6 +61,15 @@ export const globalErrorHandler: ErrorRequestHandler = (
           message: `${target} already exists.`,
         },
       ];
+    } else if (err.code === "P2003") {
+      statusCode = httpStatus.BAD_REQUEST;
+      message = "Foreign key constraint failed. The related record does not exist.";
+      errorSources = [
+        {
+          path: "",
+          message: message,
+        },
+      ];
     } else if (err.code === "P2025") {
       statusCode = httpStatus.NOT_FOUND;
       message = "Record not found.";
@@ -91,10 +100,18 @@ export const globalErrorHandler: ErrorRequestHandler = (
     ];
   } else if (err instanceof Error) {
     message = err.message;
+    errorSources = [
+      {
+        path: "",
+        message: err.message,
+      },
+    ];
   }
 
   res.status(statusCode).json({
     success: false,
     message,
+    errorSources,
+    stack: config.node_env === "development" ? err?.stack : undefined,
   });
 };

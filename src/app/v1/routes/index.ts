@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { AuthRoutes } from "../modules/auth/auth.route";
-
 import { HubRoutes } from "../modules/hub/hub.route";
-import { UserRoutes } from "../modules/user/user.route";
 import { AreaRoutes } from "../modules/areas/area.route";
+import { ShipmentRoutes } from "../modules/shipment/shipment.route";
+import { UserRoutes } from "../modules/user/user.route";
 
 const v1Routes: Router = Router();
 
@@ -17,6 +17,7 @@ const routes: IRoutes[] = [
   { path: "/auth", router: AuthRoutes },
   { path: "/hubs", router: HubRoutes },
   { path: "/areas", router: AreaRoutes },
+  { path: "/shipments", router: ShipmentRoutes },
 ];
 
 routes.forEach((route) => {

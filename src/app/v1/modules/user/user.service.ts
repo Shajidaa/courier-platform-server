@@ -158,17 +158,28 @@ const verifyEmail = async (
 
   const userPayload: IRedisUserData = JSON.parse(redisUserData);
 
-  const createdUser = await prisma.user.create({
-    data: {
-      name: userPayload.name,
-      email: userPayload.email,
-      password: userPayload.password,
-      role: userPayload.role,
-      gender: userPayload.gender,
-      status: UserStatus.ACTIVE,
-      emailVerified: true,
-    },
-    omit: { password: true },
+  const createdUser = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        name: userPayload.name,
+        email: userPayload.email,
+        password: userPayload.password,
+        role: userPayload.role,
+        gender: userPayload.gender,
+        status: UserStatus.ACTIVE,
+        emailVerified: true,
+      },
+      omit: { password: true },
+    });
+
+    // Auto-create the role-specific profile so downstream services never get null
+    if (userPayload.role === Role.SENDER) {
+      await tx.sender.create({ data: { userId: user.id } });
+    } else if (userPayload.role === Role.RIDER) {
+      await tx.rider.create({ data: { userId: user.id } });
+    }
+
+    return user;
   });
 
   // Cleanup Redis cache
@@ -296,18 +307,28 @@ const googleAuth = async (
       },
     });
   } else {
-    user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        googleId,
-        authProvider: AuthProvider.GOOGLE,
-        emailVerified: true,
-        role,
-        gender,
-        imageUrl,
-        status: UserStatus.ACTIVE,
-      },
+    user = await prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          name,
+          email,
+          googleId,
+          authProvider: AuthProvider.GOOGLE,
+          emailVerified: true,
+          role,
+          gender,
+          imageUrl,
+          status: UserStatus.ACTIVE,
+        },
+      });
+
+      if (role === Role.SENDER) {
+        await tx.sender.create({ data: { userId: created.id } });
+      } else if (role === Role.RIDER) {
+        await tx.rider.create({ data: { userId: created.id } });
+      }
+
+      return created;
     });
   }
 

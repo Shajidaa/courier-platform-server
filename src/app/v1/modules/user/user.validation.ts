@@ -17,15 +17,7 @@ const registerUserSchema = z.object({
       .min(6, "Password must be at least 6 characters long"),
     gender: z.enum(["MALE", "FEMALE", "OTHER"] as const),
     role: z
-      .enum([
-        "SENDER",
-        "RIDER",
-        "HUB_MANAGER",
-        "OPS_MANAGER",
-        "SUPPORT_AGENT",
-        "ADMIN",
-        "SUPER_ADMIN",
-      ] as const)
+      .enum(["SENDER", "RIDER"] as const)
       .optional()
       .default("RIDER"),
   }),
@@ -58,15 +50,7 @@ const googleAuthSchema = z.object({
     imageUrl: z.string().optional(),
     gender: z.enum(["MALE", "FEMALE", "OTHER"] as const).optional(),
     role: z
-      .enum([
-        "SENDER",
-        "RIDER",
-        "HUB_MANAGER",
-        "OPS_MANAGER",
-        "SUPPORT_AGENT",
-        "ADMIN",
-        "SUPER_ADMIN",
-      ] as const)
+      .enum(["SENDER", "RIDER"] as const)
       .optional(),
   }),
 });

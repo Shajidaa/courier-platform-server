@@ -16,7 +16,22 @@ const createHubSchema = z.object({
     }),
 });
 
+const updateHubSchema = z.object({
+    body: z
+        .object({
+            hubName: z.string().min(2).max(100).trim().optional(),
+            address: z.string().min(5).max(255).trim().optional(),
+        })
+        .refine((data) => Object.keys(data).length > 0, {
+            message: "At least one field must be provided to update.",
+        }),
+});
 
+const assignManagerSchema = z.object({
+    body: z.object({
+        managerId: z.string().uuid("Invalid manager ID format"),
+    }),
+});
 
 const hubListQuerySchema = z.object({
     query: z.object({
@@ -26,11 +41,9 @@ const hubListQuerySchema = z.object({
     }),
 });
 
-
-
 export const HubValidation = {
     createHubSchema,
-
+    updateHubSchema,
+    assignManagerSchema,
     hubListQuerySchema,
-
 };

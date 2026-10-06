@@ -7,19 +7,52 @@ import { HubValidation } from "./hub.validation";
 
 const router = Router();
 
-// Hub routes
+const ADMIN_ROLES = [Role.ADMIN, Role.SUPER_ADMIN];
+const READ_ROLES = [
+    Role.ADMIN,
+    Role.SUPER_ADMIN,
+    Role.OPS_MANAGER,
+    Role.HUB_MANAGER,
+];
+
 router.post(
     "/",
-    auth(Role.ADMIN, Role.SUPER_ADMIN),
+    auth(...ADMIN_ROLES),
     validateRequest(HubValidation.createHubSchema),
     HubController.createHub,
 );
 
 router.get(
     "/",
-    auth(Role.ADMIN, Role.SUPER_ADMIN, Role.OPS_MANAGER, Role.HUB_MANAGER),
+    auth(...READ_ROLES),
     validateRequest(HubValidation.hubListQuerySchema),
     HubController.getAllHubs,
+);
+
+router.get(
+    "/:id",
+    auth(...READ_ROLES),
+    HubController.getHubById,
+);
+
+router.patch(
+    "/:id",
+    auth(...ADMIN_ROLES),
+    validateRequest(HubValidation.updateHubSchema),
+    HubController.updateHub,
+);
+
+router.patch(
+    "/:id/assign-manager",
+    auth(...ADMIN_ROLES),
+    validateRequest(HubValidation.assignManagerSchema),
+    HubController.assignManager,
+);
+
+router.delete(
+    "/:id",
+    auth(...ADMIN_ROLES),
+    HubController.deleteHub,
 );
 
 export const HubRoutes = router;
