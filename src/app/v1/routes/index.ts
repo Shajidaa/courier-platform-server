@@ -5,6 +5,7 @@ import { AreaRoutes } from "../modules/areas/area.route";
 import { HubTransferRoutes } from "../modules/hub-transfer/hub-transfer.route";
 import { ShipmentRoutes } from "../modules/shipment/shipment.route";
 import { UserRoutes } from "../modules/user/user.route";
+import { VehicleRoutes } from "../modules/vehicle/vehicle.route";
 
 const v1Routes: Router = Router();
 
@@ -20,6 +21,7 @@ const routes: IRoutes[] = [
   { path: "/areas", router: AreaRoutes },
   { path: "/shipments", router: ShipmentRoutes },
   { path: "/hub-transfers", router: HubTransferRoutes },
+  { path: "/vehicles", router: VehicleRoutes },
 ];
 
 routes.forEach((route) => {
