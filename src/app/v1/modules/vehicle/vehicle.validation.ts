@@ -41,8 +41,29 @@ const vehicleListQuerySchema = z.object({
     search: z.string().trim().optional(),
   }),
 });
+const updateVehicleSchema = z.object({
+  body: z.object({
+    vehicleNumber: z
+      .string()
+      .min(2, "Vehicle number must be at least 2 characters")
+      .max(20, "Vehicle number cannot exceed 20 characters")
+      .trim()
+      .toUpperCase()
+      .optional(),
 
+    type: z
+      .enum(VEHICLE_TYPES, {
+        message: "Vehicle type must be valid",
+      })
+      .optional(),
+    driverName: z.string().min(2).max(100).trim().optional(),
+    capacity: z.string().max(50).trim().optional(),
+    status: z.enum(VEHICLE_STATUSES).optional(),
+    currentDriverId: z.string().uuid("Invalid driver ID").nullable().optional(),
+  }),
+});
 export const VehicleValidation = {
   createVehicleSchema,
   vehicleListQuerySchema,
+  updateVehicleSchema,
 };

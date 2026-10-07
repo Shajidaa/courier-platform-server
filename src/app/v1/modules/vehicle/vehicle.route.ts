@@ -31,4 +31,10 @@ router.get(
 );
 router.get("/:id", auth(...ROLES), VehicleController.getVehicleById);
 router.delete("/:id", auth(...ROLES), VehicleController.deleteVehicle);
+router.patch(
+  "/:id",
+  auth(...ROLES),
+  validateRequest(VehicleValidation.updateVehicleSchema),
+  VehicleController.updateVehicle,
+);
 export const VehicleRoutes = router;
