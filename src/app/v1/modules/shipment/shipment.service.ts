@@ -728,12 +728,36 @@ const assignRider = async (
     );
   }
 
-  const rider = await prisma.rider.findUnique({
+  let rider = await prisma.rider.findUnique({
     where: { id: riderId },
     include: {
-      user: { select: { status: true, isDeleted: true, role: true } },
+      user: { select: { id: true, name: true, status: true, isDeleted: true, role: true } },
     },
   });
+
+  if (!rider) {
+    rider = await prisma.rider.findUnique({
+      where: { userId: riderId },
+      include: {
+        user: { select: { id: true, name: true, status: true, isDeleted: true, role: true } },
+      },
+    });
+  }
+
+  if (!rider) {
+    // Check if riderId belongs to a User with RIDER role
+    const riderUser = await prisma.user.findUnique({
+      where: { id: riderId },
+    });
+    if (riderUser && riderUser.role === Role.RIDER && !riderUser.isDeleted) {
+      rider = await prisma.rider.create({
+        data: { userId: riderUser.id },
+        include: {
+          user: { select: { id: true, name: true, status: true, isDeleted: true, role: true } },
+        },
+      });
+    }
+  }
 
   if (!rider) {
     throw new AppError(httpStatus.NOT_FOUND, "Rider not found.");
@@ -756,7 +780,7 @@ const assignRider = async (
   const updated = await prisma.$transaction(async (tx) => {
     const result = await tx.shipment.update({
       where: { id: shipmentId },
-      data: { assignedCourierId: riderId },
+      data: { assignedCourierId: rider.id },
       select: shipmentSelect,
     });
 
@@ -764,7 +788,7 @@ const assignRider = async (
       data: {
         shipmentId,
         status: shipment.status,
-        note: `Courier assigned by ops (riderId: ${riderId}).`,
+        note: `Courier assigned by ops (rider: ${rider.user.name || rider.id}).`,
         updatedById: requestUser.userId,
       },
     });

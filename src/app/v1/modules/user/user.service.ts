@@ -546,6 +546,52 @@ const updateProfile = async (
   return updatedUser;
 };
 
+const getAllRiders = async () => {
+  const users = await prisma.user.findMany({
+    where: {
+      role: Role.RIDER,
+      isDeleted: false,
+    },
+    include: {
+      profile: true,
+      hub: true,
+      rider: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return Promise.all(
+    users.map(async (u) => {
+      let riderRecord = u.rider;
+      if (!riderRecord) {
+        riderRecord = await prisma.rider.create({
+          data: { userId: u.id },
+        });
+      }
+
+      return {
+        id: riderRecord.id,
+        userId: u.id,
+        name: u.name,
+        email: u.email,
+        phone: u.profile?.phoneNumber || "",
+        address: u.profile?.bio || u.hub?.address || "",
+        status: u.status,
+        imageUrl: u.imageUrl,
+        hubId: u.hub?.id || null,
+        hubName: u.hub?.hubName || null,
+        hubCity: u.hub?.address || null,
+        vehicleType: riderRecord.vehicleType || null,
+        vehicleNumber: riderRecord.vehicleNumber || null,
+        totalDeliveries: riderRecord.totalDeliveries || 0,
+        averageRating: riderRecord.averageRating ? Number(riderRecord.averageRating) : null,
+      };
+    }),
+  );
+};
+
 export const UserService = {
   registerUser,
   verifyEmail,
@@ -555,4 +601,5 @@ export const UserService = {
   resetPassword,
   changePassword,
   updateProfile,
+  getAllRiders,
 };

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { Role } from "../../../../../generated/prisma/client";
 import { auth } from "../../../middlewares/auth";
 import { validateRequest } from "../../../middlewares/validateRequest";
 import { UserController } from "./user.controller";
@@ -40,6 +41,12 @@ router.post(
 // Protected Routes (Require Authentication)
 router.get("/me", auth(), UserController.getMyProfile);
 
+router.get(
+  "/riders",
+  auth(Role.ADMIN, Role.SUPER_ADMIN, Role.OPS_MANAGER, Role.HUB_MANAGER),
+  UserController.getAllRiders,
+);
+
 router.patch(
   "/me",
   auth(),
@@ -55,3 +62,4 @@ router.post(
 );
 
 export const UserRoutes = router;
+

@@ -136,6 +136,17 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllRiders = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.getAllRiders();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Riders retrieved successfully.",
+    data: result,
+  });
+});
+
 export const UserController = {
   registerUser,
   verifyEmail,
@@ -145,4 +156,5 @@ export const UserController = {
   resetPassword,
   changePassword,
   updateProfile,
+  getAllRiders,
 };
