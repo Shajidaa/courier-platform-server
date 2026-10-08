@@ -13,30 +13,30 @@ const OPS_ROLES = [Role.ADMIN, Role.SUPER_ADMIN, Role.OPS_MANAGER];
 
 router.post(
   "/",
-  auth(Role.SENDER),
+  auth(Role.SENDER, ...OPS_ROLES),
   validateRequest(ShipmentValidation.createShipmentSchema),
   ShipmentController.createShipment,
 );
 
 router.get(
   "/my",
-  auth(Role.SENDER),
+  auth(Role.SENDER, ...OPS_ROLES),
   validateRequest(ShipmentValidation.listShipmentsSchema),
   ShipmentController.getMyShipments,
 );
 
-// ─── Admin / Ops routes ───────────────────────────────────────────────────────
+// ─── Admin / Ops / Rider routes ───────────────────────────────────────────────
 
 router.get(
   "/",
-  auth(...OPS_ROLES, Role.HUB_MANAGER),
+  auth(...OPS_ROLES, Role.HUB_MANAGER, Role.RIDER),
   validateRequest(ShipmentValidation.adminListShipmentsSchema),
   ShipmentController.getAllShipments,
 );
 
 router.patch(
   "/:id/status",
-  auth(...OPS_ROLES, Role.HUB_MANAGER),
+  auth(...OPS_ROLES, Role.HUB_MANAGER, Role.RIDER),
   validateRequest(ShipmentValidation.updateStatusSchema),
   ShipmentController.updateShipmentStatus,
 );

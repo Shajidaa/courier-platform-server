@@ -116,16 +116,26 @@ const createShipment = async (
   payload: ICreateShipmentPayload,
   requestUser: IJwtPayload,
 ) => {
-  const sender = await prisma.sender.findUnique({
+  let sender = await prisma.sender.findUnique({
     where: { userId: requestUser.userId },
   });
-  console.log("Sender:", sender);
-  console.log("Request User:", requestUser);
+
   if (!sender) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "Only users with a Sender profile can create shipments.",
-    );
+    if (
+      requestUser.role === Role.SENDER ||
+      requestUser.role === Role.ADMIN ||
+      requestUser.role === Role.SUPER_ADMIN ||
+      requestUser.role === Role.OPS_MANAGER
+    ) {
+      sender = await prisma.sender.create({
+        data: { userId: requestUser.userId },
+      });
+    } else {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Only users with a Sender profile can create shipments.",
+      );
+    }
   }
 
   const {
@@ -225,15 +235,26 @@ const getMyShipments = async (
   requestUser: IJwtPayload,
   query: IShipmentListQuery,
 ) => {
-  const sender = await prisma.sender.findUnique({
+  let sender = await prisma.sender.findUnique({
     where: { userId: requestUser.userId },
   });
 
   if (!sender) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "Only users with a Sender profile can view shipments.",
-    );
+    if (
+      requestUser.role === Role.SENDER ||
+      requestUser.role === Role.ADMIN ||
+      requestUser.role === Role.SUPER_ADMIN ||
+      requestUser.role === Role.OPS_MANAGER
+    ) {
+      sender = await prisma.sender.create({
+        data: { userId: requestUser.userId },
+      });
+    } else {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Only users with a Sender profile can view shipments.",
+      );
+    }
   }
 
   const { page = 1, limit = 10, status } = query;
@@ -248,7 +269,7 @@ const getMyShipments = async (
     prisma.shipment.findMany({
       where,
       skip,
-      take: limit,
+      take: Number(limit),
       orderBy: { createdAt: "desc" },
       select: shipmentSelect,
     }),
@@ -487,38 +508,62 @@ const cancelShipment = async (shipmentId: string, requestUser: IJwtPayload) => {
  * For ADMIN, SUPER_ADMIN, OPS_MANAGER, HUB_MANAGER.
  * Supports filtering by status, senderId, and full-text search.
  */
-const getAllShipments = async (query: IAdminShipmentListQuery) => {
+const getAllShipments = async (
+  query: IAdminShipmentListQuery,
+  requestUser?: IJwtPayload,
+) => {
   const { page = 1, limit = 10, status, senderId, search } = query;
   const skip = (page - 1) * limit;
 
-  const where: Record<string, unknown> = {};
+  const andConditions: Record<string, unknown>[] = [];
 
-  if (status) where.status = status;
-  if (senderId) where.senderId = senderId;
+  if (status) andConditions.push({ status });
+  if (senderId) andConditions.push({ senderId });
+
+  if (requestUser?.role === Role.RIDER) {
+    let rider = await prisma.rider.findUnique({
+      where: { userId: requestUser.userId },
+    });
+    if (!rider) {
+      rider = await prisma.rider.create({
+        data: { userId: requestUser.userId },
+      });
+    }
+    andConditions.push({
+      OR: [
+        { assignedCourierId: rider.id },
+        { assignedCourier: { userId: requestUser.userId } },
+      ],
+    });
+  }
 
   if (search) {
-    where.OR = [
-      { trackingNumber: { contains: search, mode: "insensitive" } },
-      { recipientName: { contains: search, mode: "insensitive" } },
-      { recipientPhone: { contains: search, mode: "insensitive" } },
-      {
-        sender: {
-          user: {
-            OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { email: { contains: search, mode: "insensitive" } },
-            ],
+    andConditions.push({
+      OR: [
+        { trackingNumber: { contains: search, mode: "insensitive" } },
+        { recipientName: { contains: search, mode: "insensitive" } },
+        { recipientPhone: { contains: search, mode: "insensitive" } },
+        {
+          sender: {
+            user: {
+              OR: [
+                { name: { contains: search, mode: "insensitive" } },
+                { email: { contains: search, mode: "insensitive" } },
+              ],
+            },
           },
         },
-      },
-    ];
+      ],
+    });
   }
+
+  const where = andConditions.length > 0 ? { AND: andConditions } : {};
 
   const [shipments, total] = await prisma.$transaction([
     prisma.shipment.findMany({
       where,
       skip,
-      take: limit,
+      take: Number(limit),
       orderBy: { createdAt: "desc" },
       select: shipmentSelect,
     }),

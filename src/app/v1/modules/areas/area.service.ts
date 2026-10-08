@@ -86,7 +86,7 @@ const getAllAreas = async (query: IAreaListQuery) => {
         prisma.area.findMany({
             where,
             skip,
-            take: limit,
+            take: Number(limit),
             orderBy: { createdAt: "desc" },
             include: {
                 hub: {

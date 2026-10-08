@@ -131,7 +131,7 @@ const getAllVehicles = async (query: IVehicleListQuery) => {
     prisma.vehicle.findMany({
       where,
       skip,
-      take: limit,
+      take: Number(limit),
       orderBy: { createdAt: "desc" },
       select: vehicleSelect,
     }),

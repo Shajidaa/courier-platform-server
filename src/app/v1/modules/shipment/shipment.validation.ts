@@ -24,10 +24,16 @@ const createShipmentSchema = z.object({
             .trim(),
         recipientPhone: z
             .string()
-            .regex(PHONE_REGEX, "Invalid Bangladeshi phone number"),
+            .transform((val) => val.replace(/[\s-]/g, ""))
+            .pipe(
+                z.string().regex(
+                    PHONE_REGEX,
+                    "Invalid Bangladeshi phone number (e.g. 01712345678 or +8801712345678)",
+                ),
+            ),
         recipientAddress: z
             .string()
-            .min(10, "Recipient address must be at least 10 characters")
+            .min(5, "Recipient address must be at least 5 characters")
             .max(255)
             .trim(),
         weight: z
@@ -50,7 +56,7 @@ const createShipmentSchema = z.object({
             .optional()
             .default(0),
         paymentMethod: z
-            .enum(["CASH_ON_DELIVERY", "BKASH", "NAGAD", "CARD", "STRIPE", "SSLCOMMERZ"])
+            .enum(["CASH_ON_DELIVERY", "BKASH"])
             .optional()
             .default("CASH_ON_DELIVERY"),
     }),

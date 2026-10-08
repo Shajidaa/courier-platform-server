@@ -13,6 +13,8 @@ const READ_ROLES = [
     Role.SUPER_ADMIN,
     Role.OPS_MANAGER,
     Role.HUB_MANAGER,
+    Role.RIDER,
+    Role.SENDER,
 ];
 
 router.post(

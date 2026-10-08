@@ -70,6 +70,7 @@ const cancelShipment = catchAsync(async (req: Request, res: Response) => {
 const getAllShipments = catchAsync(async (req: Request, res: Response) => {
   const { data, meta } = await ShipmentService.getAllShipments(
     req.query as any,
+    req.user!,
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,
