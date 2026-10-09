@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import {
   PaymentMethod,
   PaymentStatus,
+  ShipmentStatus,
 } from "../../../../../generated/prisma/client";
 import config from "../../../config";
 import AppError from "../../../errors/AppError";
@@ -16,15 +17,15 @@ import type { IBkashInitiatePayload } from "./payment.interface";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Generates a unique merchant invoice number tied to the payment row. */
+/** Generates a unique merchant invoice number tied to the payment row and timestamp. */
 const buildInvoiceNumber = (paymentId: string): string =>
-  `INV-${paymentId.substring(0, 8).toUpperCase()}`;
+  `INV-${paymentId.substring(0, 8).toUpperCase()}-${Date.now().toString().slice(-4)}`;
 
 // ─── Services ─────────────────────────────────────────────────────────────────
 
 /**
  * Initiate a bKash payment for a shipment.
- * Status will be set to PENDING upon initiation.
+ * Status will remain PENDING upon initiation until callback execution.
  */
 const initiatePayment = async (
   payload: IBkashInitiatePayload,
@@ -52,6 +53,7 @@ const initiatePayment = async (
       deliveryCharge: true,
       codAmount: true,
       trackingNumber: true,
+      status: true,
     },
   });
 
@@ -66,11 +68,17 @@ const initiatePayment = async (
     );
   }
 
-  // Check if already paid via bKash
+  if (shipment.status === ShipmentStatus.CANCELLED) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Cannot initiate payment for a cancelled shipment.",
+    );
+  }
+
+  // Check if shipment is already paid (any method)
   const paidPayment = await prisma.payment.findFirst({
     where: {
       shipmentId,
-      paymentMethod: PaymentMethod.BKASH,
       paymentStatus: PaymentStatus.PAID,
     },
   });
@@ -78,7 +86,7 @@ const initiatePayment = async (
   if (paidPayment) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      "This shipment has already been paid via bKash.",
+      `This shipment has already been paid via ${paidPayment.paymentMethod}.`,
     );
   }
 
@@ -86,7 +94,7 @@ const initiatePayment = async (
     Number(shipment.deliveryCharge) + Number(shipment.codAmount);
   const amount = amountNum.toFixed(2);
 
-  // Find existing PENDING bKash payment record or create/update it with PENDING status
+  // Find existing PENDING payment record or create/update it while keeping PENDING status
   let payment = await prisma.payment.findFirst({
     where: {
       shipmentId,
@@ -108,10 +116,8 @@ const initiatePayment = async (
       where: { id: payment.id },
       data: {
         paymentMethod: PaymentMethod.BKASH,
-        paymentStatus: PaymentStatus.PAID,
+        paymentStatus: PaymentStatus.PENDING,
         amount: amountNum,
-
-        transactionId: payment.transactionId,
       },
     });
   }
@@ -167,7 +173,7 @@ const handleCallback = async (query: {
 
   const payment = await prisma.payment.findUnique({
     where: { id: paymentRecordId },
-    include: { shipment: { select: { id: true, trackingNumber: true } } },
+    include: { shipment: { select: { id: true, trackingNumber: true, status: true } } },
   });
 
   if (!payment) {
@@ -179,7 +185,7 @@ const handleCallback = async (query: {
   }
 
   // User cancelled or bKash returned failure
-  if (status !== "success") {
+  if (status?.toLowerCase() !== "success") {
     const updated = await prisma.payment.update({
       where: { id: paymentRecordId },
       data: {
@@ -213,6 +219,16 @@ const handleCallback = async (query: {
         gatewayResponse: executeResponse as any,
       },
     });
+
+    if (isSuccess) {
+      await tx.shipmentLog.create({
+        data: {
+          shipmentId: payment.shipmentId,
+          status: payment.shipment?.status ?? ShipmentStatus.PENDING,
+          note: `Payment of BDT ${executeResponse.amount} completed via bKash. TrxID: ${executeResponse.trxID}`,
+        },
+      });
+    }
 
     return result;
   });

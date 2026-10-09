@@ -6,7 +6,7 @@ import { PaymentService } from "./payment.service";
 
 const initiatePayment = catchAsync(async (req: Request, res: Response) => {
   const data = await PaymentService.initiatePayment(req.body, req.user!);
-  console.log("Payment initiation data:", data);
+  // console.log("Payment initiation data:", data);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

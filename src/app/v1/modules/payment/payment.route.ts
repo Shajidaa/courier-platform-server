@@ -15,14 +15,20 @@ router.post(
     PaymentController.initiatePayment,
 );
 
-// GET /api/v1/payments/bkash/callback — bKash redirects here after user action (no JWT)
+// GET /api/v1/payments/callback & /api/v1/payments/bkash/callback — bKash redirects here after user action (no JWT)
+router.get(
+    "/callback",
+    validateRequest(PaymentValidation.callbackQuerySchema),
+    PaymentController.handleCallback,
+);
+
 router.get(
     "/bkash/callback",
     validateRequest(PaymentValidation.callbackQuerySchema),
     PaymentController.handleCallback,
 );
 
-// GET /api/v1/payments/:id — Check payment status
+// GET /api/v1/payments/:id — Check payment status (defined after static routes)
 router.get(
     "/:id",
     auth(
