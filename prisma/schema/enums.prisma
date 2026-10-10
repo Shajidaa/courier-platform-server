@@ -73,7 +73,6 @@ enum DeliveryType {
 }
 
 enum PaymentMethod {
-    CASH_ON_DELIVERY
     BKASH
     NAGAD
     CARD

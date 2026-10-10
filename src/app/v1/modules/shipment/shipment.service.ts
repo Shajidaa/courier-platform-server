@@ -147,7 +147,7 @@ const createShipment = async (
     packageDimensions,
     deliveryType = DeliveryType.STANDARD,
     codAmount = 0,
-    paymentMethod = PaymentMethod.CASH_ON_DELIVERY,
+    paymentMethod = PaymentMethod.BKASH,
   } = payload;
 
   // Block self-delivery
@@ -731,7 +731,15 @@ const assignRider = async (
   let rider = await prisma.rider.findUnique({
     where: { id: riderId },
     include: {
-      user: { select: { id: true, name: true, status: true, isDeleted: true, role: true } },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          status: true,
+          isDeleted: true,
+          role: true,
+        },
+      },
     },
   });
 
@@ -739,7 +747,15 @@ const assignRider = async (
     rider = await prisma.rider.findUnique({
       where: { userId: riderId },
       include: {
-        user: { select: { id: true, name: true, status: true, isDeleted: true, role: true } },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            status: true,
+            isDeleted: true,
+            role: true,
+          },
+        },
       },
     });
   }
@@ -753,7 +769,15 @@ const assignRider = async (
       rider = await prisma.rider.create({
         data: { userId: riderUser.id },
         include: {
-          user: { select: { id: true, name: true, status: true, isDeleted: true, role: true } },
+          user: {
+            select: {
+              id: true,
+              name: true,
+              status: true,
+              isDeleted: true,
+              role: true,
+            },
+          },
         },
       });
     }
