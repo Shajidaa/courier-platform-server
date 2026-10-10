@@ -101,6 +101,17 @@ const shipmentSelect = {
       },
     },
   },
+  payments: {
+    select: {
+      id: true,
+      amount: true,
+      paymentMethod: true,
+      paymentStatus: true,
+      transactionId: true,
+      currency: true,
+      createdAt: true,
+    },
+  },
 } as const;
 
 // ─── Sender-facing services ───────────────────────────────────────────────────
@@ -207,7 +218,7 @@ const createShipment = async (
       },
     });
 
-    await tx.payment.create({
+    const payment = await tx.payment.create({
       data: {
         shipmentId: created.id,
         amount: new Decimal(deliveryCharge + codAmount),
@@ -222,7 +233,20 @@ const createShipment = async (
       data: { totalOrders: { increment: 1 } },
     });
 
-    return created;
+    return {
+      ...created,
+      payments: [
+        {
+          id: payment.id,
+          amount: payment.amount,
+          paymentMethod: payment.paymentMethod,
+          paymentStatus: payment.paymentStatus,
+          transactionId: payment.transactionId,
+          currency: payment.currency,
+          createdAt: payment.createdAt,
+        },
+      ],
+    };
   });
 
   return shipment;
@@ -656,6 +680,24 @@ const updateShipmentStatus = async (
     if (!hub) throw new AppError(httpStatus.NOT_FOUND, "Hub not found.");
   }
 
+  // Enforce payment completion before delivery
+  if (newStatus === ShipmentStatus.DELIVERED) {
+    const payments = await prisma.payment.findMany({
+      where: { shipmentId },
+    });
+
+    const hasUnpaidPayment =
+      payments.length === 0 ||
+      payments.some((p) => p.paymentStatus !== PaymentStatus.PAID);
+
+    if (hasUnpaidPayment) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Cannot mark shipment as DELIVERED without completed payment.",
+      );
+    }
+  }
+
   const updated = await prisma.$transaction(async (tx) => {
     const result = await tx.shipment.update({
       where: { id: shipmentId },
@@ -678,14 +720,6 @@ const updateShipmentStatus = async (
         updatedById: requestUser.userId,
       },
     });
-
-    // Mark payment as PAID on delivery
-    if (newStatus === ShipmentStatus.DELIVERED) {
-      await tx.payment.updateMany({
-        where: { shipmentId, paymentStatus: PaymentStatus.PENDING },
-        data: { paymentStatus: PaymentStatus.PAID },
-      });
-    }
 
     return result;
   });
